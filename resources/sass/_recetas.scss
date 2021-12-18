@@ -1,0 +1,19 @@
+//fonts
+body{
+    font-family:  $parrafos-font-family;
+}
+
+.bg-primary .navbar-brand{
+    color: white;
+    font-size: larger;
+    &:hover{
+        color: #9c8a8a;
+    }
+}
+.navbar-light .navbar-nav .nav-link{
+    color: white;
+    font-size: larger;
+    &:hover{
+        color: #9c8a8a;
+    }
+}
