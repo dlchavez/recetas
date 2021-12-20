@@ -9,9 +9,9 @@
         <table class="table">
             <thead class="bg-primary text-light">
                 <tr>
-                    <th scope="col"> Nombre</th>
-                    <th scope="col"> Categoria</th>
-                    <th scope="col"> Acciones</th>
+                    <th scole="col"> Nombre</th>
+                    <th scole="col"> Categoria</th>
+                    <th scole="col"> Acciones</th>
 
                 </tr>
             </thead>

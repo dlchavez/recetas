@@ -2,46 +2,101 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Receta;
 use Illuminate\Http\Request;
+
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use function GuzzleHttp\Promise\all;
 
 class RecetaController extends Controller
 {
-    //ingresa en web.php desde esta funcion
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
-        $recetas = [
-            'Receta Pizza',
-            'Receta  hamburguesa',
-            'Receta Shawarma'
-        ];
-
-        $categoria = [
-            'Italiana',
-            'Ecuatoriana',
-            'Arabe'
-        ];
+        return view("recetas.index");
         //Maneras de enviar parametros a las vista
         //return view("recetas.index")->with('recetas',$recetas) ->with('categoria',$categoria);
-        return view("recetas.index", compact('recetas','categoria'));
-    }
-    public function create (){
-        return view('recetas.create');
+        //return view("recetas.index", compact('recetas','categoria'));
     }
 
-    public function edit ($id){
-
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view("recetas.create");
     }
 
-    public function store (Request $request){
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $data=request()->validate([
+            'nombre' => 'required'
+
+        ]);
         //dd($request -> all());
-        DB::table('recetas')
+        DB::table('recetas')->insert([
+            'nombre'=> $data['nombre']
+        ]);
+
+        //Rediccionar
+        return redirect()->action([RecetaController::class, 'index']);
     }
 
-    public function update(Request $request,$id){
-
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Receta  $receta
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Receta $receta)
+    {
+        //
     }
 
-    public function destroy($id){
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Receta  $receta
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Receta $receta)
+    {
+        //
+    }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Receta  $receta
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Receta $receta)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Receta  $receta
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Receta $receta)
+    {
+        //
     }
 }
