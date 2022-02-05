@@ -16,12 +16,20 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach ($userRecetas as $userREceta )
+
+
                 <tr>
-                    <td > Pizza</td>
-                    <td > ........</td>
-                    <td > ........</td>
+                    <td > {{$userREceta->nombre}}</td>
+                    <td > {{$userREceta->categoria_id}}</td>
+                    <td >
+                        <a href="" class="btn btn-success">Ver</a>
+                        <a href="" class="btn btn-dark">Editar</a>
+                        <a href="" class="btn btn-danger">Eliminar</a>
+                    </td>
 
                 </tr>
+                @endforeach
             </tbody>
         </table>
     </div>

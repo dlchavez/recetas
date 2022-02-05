@@ -3,14 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Receta;
-use Illuminate\Http\Request;
+use App\Models\Categoria;
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use function GuzzleHttp\Promise\all;
+use Illuminate\Support\Facades\Auth;
+use Intervention\Image\Facades\Image;
 
 class RecetaController extends Controller
 {
+    //Constructor
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +27,10 @@ class RecetaController extends Controller
      */
     public function index()
     {
-        return view("recetas.index");
+        //capturar el id usuarop
+
+        $userRecetas = Auth::user()->userRecetas;
+        return view("recetas.index")->with('userRecetas',$userRecetas);
         //Maneras de enviar parametros a las vista
         //return view("recetas.index")->with('recetas',$recetas) ->with('categoria',$categoria);
         //return view("recetas.index", compact('recetas','categoria'));
@@ -31,7 +43,11 @@ class RecetaController extends Controller
      */
     public function create()
     {
-        return view("recetas.create");
+        //sin modelo
+       //$categorias=DB::table('categorias')->get()->pluck('nombre','id');
+       //con modelo
+       $categorias = Categoria::all(['id','nombre']);
+        return view("recetas.create")->with('categorias',$categorias);
     }
 
     /**
@@ -42,13 +58,27 @@ class RecetaController extends Controller
      */
     public function store(Request $request)
     {
+        $rutaimagen = ($request['imagen']->store('upload-recetas','public'));
         $data=request()->validate([
-            'nombre' => 'required'
-
+            'nombre' => 'required|min:6',
+            'categoria' => 'required',
+            'ingredientes' => 'required',
+            'preparacion' => 'required',
+            'imagen' => 'required|image'
         ]);
         //dd($request -> all());
+        //redimensionar y guardar
+        $img=Image::make(public_path("storage/{$rutaimagen}"))->fit(1000,550);
+        $img->save();
+
         DB::table('recetas')->insert([
-            'nombre'=> $data['nombre']
+            'nombre'=> $data['nombre'],
+            'ingredientes'=> $data['ingredientes'],
+            'preparacion'=> $data['preparacion'],
+            'imagen' => $rutaimagen,
+            'user_id' => Auth::user()->id,
+             'categoria_id' =>  $data['categoria']
+
         ]);
 
         //Rediccionar
