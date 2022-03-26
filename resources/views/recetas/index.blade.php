@@ -17,17 +17,14 @@
             </thead>
             <tbody>
                 @foreach ($userRecetas as $userREceta )
-
-
                 <tr>
                     <td > {{$userREceta->nombre}}</td>
-                    <td > {{$userREceta->categoria_id}}</td>
+                    <td > {{$userREceta->categoriaReceta->nombre}}</td>
                     <td >
-                        <a href="" class="btn btn-success">Ver</a>
-                        <a href="" class="btn btn-dark">Editar</a>
-                        <a href="" class="btn btn-danger">Eliminar</a>
+                        <a href="{{route('recetas.show',['receta'=>$userREceta->id])}}" class="btn btn-success d-block mb-1">Ver</a>
+                        <a href="{{route('recetas.edit',['receta'=>$userREceta->id])}}" class="btn btn-dark  d-block mb-1">Editar</a>
+                        <eliminar-receta receta-id={{$userREceta->id}}></eliminar-receta>
                     </td>
-
                 </tr>
                 @endforeach
             </tbody>

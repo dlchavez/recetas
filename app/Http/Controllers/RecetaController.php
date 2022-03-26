@@ -17,7 +17,7 @@ class RecetaController extends Controller
     //Constructor
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth',['except' =>'show']);
     }
 
     /**
@@ -71,7 +71,8 @@ class RecetaController extends Controller
         $img=Image::make(public_path("storage/{$rutaimagen}"))->fit(1000,550);
         $img->save();
 
-        DB::table('recetas')->insert([
+        //almacenar en la bdd sin modelo
+        /*DB::table('recetas')->insert([
             'nombre'=> $data['nombre'],
             'ingredientes'=> $data['ingredientes'],
             'preparacion'=> $data['preparacion'],
@@ -79,7 +80,17 @@ class RecetaController extends Controller
             'user_id' => Auth::user()->id,
              'categoria_id' =>  $data['categoria']
 
+        ]);*/
+
+        //almacenar en la bdd scon modelo
+        Auth::user()->userRecetas()->create([
+            'nombre'=> $data['nombre'],
+            'ingredientes'=> $data['ingredientes'],
+            'preparacion'=> $data['preparacion'],
+            'imagen' => $rutaimagen,
+            'categoria_id' =>  $data['categoria']
         ]);
+
 
         //Rediccionar
         return redirect()->action([RecetaController::class, 'index']);
@@ -93,7 +104,7 @@ class RecetaController extends Controller
      */
     public function show(Receta $receta)
     {
-        //
+        return view('recetas.show')->with('receta',$receta);
     }
 
     /**
@@ -104,7 +115,8 @@ class RecetaController extends Controller
      */
     public function edit(Receta $receta)
     {
-        //
+        $categorias = Categoria::all(['id','nombre']);
+        return view('recetas.edit')->with('categorias',$categorias)->with('receta',$receta);
     }
 
     /**
@@ -116,7 +128,31 @@ class RecetaController extends Controller
      */
     public function update(Request $request, Receta $receta)
     {
-        //
+        $this->authorize('update',$receta);
+        //validar campos
+        $data=request()->validate([
+            'nombre' => 'required|min:6',
+            'categoria' => 'required',
+            'ingredientes' => 'required',
+            'preparacion' => 'required'
+        ]);
+
+        //asignar valores
+        $receta -> nombre = $data['nombre'];
+        $receta -> categoria_id = $data['categoria'];
+        $receta -> ingredientes = $data['ingredientes'];
+        $receta -> preparacion = $data['preparacion'];
+
+
+        //Nueva imagen
+        if(request('imagen')){
+            $rutaimagen = ($request['imagen']->store('upload-recetas','public'));
+            $img=Image::make(public_path("storage/{$rutaimagen}"))->fit(1000,550);
+            $img->save();
+            $receta->imagen=$rutaimagen;
+        }
+        $receta -> save();
+        return redirect()->action([RecetaController::class,"index"]);
     }
 
     /**
@@ -127,6 +163,9 @@ class RecetaController extends Controller
      */
     public function destroy(Receta $receta)
     {
-        //
+        //$this->authorize('delete',$receta);
+        $receta->delete();
+
+        return  redirect()->action([RecetaController::class,"index"]);
     }
 }
